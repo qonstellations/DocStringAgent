@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docstring Agent — AI Documentation Generator</title>
+    <meta name="description" content="AI-powered Python docstring generation agent using Google Gemini">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+
+    <!-- ── Animated Background ──────────────────────────────────── -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <!-- ── Navbar ───────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <span class="logo-text">Docstring Agent</span>
+            </div>
+            <div class="nav-badge">
+                <span class="badge-dot"></span>
+                AI-Powered
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Main Content ─────────────────────────────────────────── -->
+    <main class="container">
+
+        <!-- Hero -->
+        <section class="hero" id="hero">
+            <h1 class="hero-title">
+                Generate <span class="gradient-text">Python Docstrings</span> Instantly
+            </h1>
+            <p class="hero-sub">
+                Paste code, upload a file, or point to a path — get clean, Google-style docstrings powered by AI.
+            </p>
+        </section>
+
+        <!-- Workspace -->
+        <div class="workspace">
+
+            <!-- ── Input Panel ──────────────────────────────────── -->
+            <section class="panel input-panel" id="input-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Input</h2>
+                    <div class="input-tabs" role="tablist">
+                        <button class="tab active" data-tab="paste" role="tab" aria-selected="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            </svg>
+                            Paste Code
+                        </button>
+                        <button class="tab" data-tab="upload" role="tab" aria-selected="false">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            Upload File
+                        </button>
+                        <button class="tab" data-tab="path" role="tab" aria-selected="false">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                            </svg>
+                            Server Path
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab: Paste -->
+                <div class="tab-content active" id="tab-paste">
+                    <div class="code-editor-wrap">
+                        <div class="editor-header">
+                            <span class="editor-dot red"></span>
+                            <span class="editor-dot yellow"></span>
+                            <span class="editor-dot green"></span>
+                            <span class="editor-filename">input.py</span>
+                        </div>
+                        <textarea id="code-input" class="code-editor" spellcheck="false" placeholder="# Paste your Python code here…
+
+def calculate_area(radius: float) -> float:
+    return math.pi * radius ** 2
+
+class ShoppingCart:
+    def add_item(self, name: str, price: float):
+        self.items.append({'name': name, 'price': price})
+"></textarea>
+                    </div>
+                </div>
+
+                <!-- Tab: Upload -->
+                <div class="tab-content" id="tab-upload">
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-icon-wrap">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <p class="upload-text">Drag & drop a <strong>.py</strong> file here</p>
+                        <p class="upload-or">or</p>
+                        <label for="file-input" class="upload-browse-btn">Browse Files</label>
+                        <input type="file" id="file-input" accept=".py" hidden>
+                        <p class="upload-filename" id="upload-filename" hidden></p>
+                    </div>
+                </div>
+
+                <!-- Tab: Path -->
+                <div class="tab-content" id="tab-path">
+                    <div class="path-input-wrap">
+                        <svg class="path-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                        </svg>
+                        <input type="text" id="path-input" class="path-input"
+                            placeholder="/path/to/file.py or /path/to/directory">
+                    </div>
+                    <label class="checkbox-wrap" id="recursive-wrap">
+                        <input type="checkbox" id="recursive" checked>
+                        <span class="checkbox-custom"></span>
+                        Recursive (for directories)
+                    </label>
+                </div>
+
+                <!-- Options Bar -->
+                <div class="options-bar">
+                    <label class="toggle-wrap">
+                        <div class="toggle">
+                            <input type="checkbox" id="overwrite">
+                            <span class="toggle-track">
+                                <span class="toggle-thumb"></span>
+                            </span>
+                        </div>
+                        <span class="toggle-label">Overwrite existing</span>
+                    </label>
+
+                    <div class="select-wrap">
+                        <select id="model-select">
+                            <optgroup label="Gemini (Cloud)">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            </optgroup>
+                            <optgroup label="Ollama (Local)" id="ollama-models">
+                                <!-- Populated dynamically by JS -->
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button class="generate-btn" id="generate-btn">
+                    <span class="btn-content">
+                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg>
+                        <span class="btn-text">Generate Docstrings</span>
+                    </span>
+                    <span class="btn-loader" hidden>
+                        <span class="spinner"></span>
+                        Generating…
+                    </span>
+                </button>
+            </section>
+
+            <!-- ── Output Panel ─────────────────────────────────── -->
+            <section class="panel output-panel" id="output-panel" hidden>
+                <div class="panel-header">
+                    <h2 class="panel-title">Output</h2>
+                    <div class="stats" id="stats"></div>
+                </div>
+
+                <!-- Output View Tabs -->
+                <div class="output-tabs" role="tablist">
+                    <button class="otab active" data-view="modified" role="tab">Modified</button>
+                    <button class="otab" data-view="original" role="tab">Original</button>
+                    <button class="otab" data-view="side-by-side" role="tab">Side by Side</button>
+                </div>
+
+                <!-- Output Views -->
+                <div class="output-view active" id="view-modified">
+                    <div class="code-display-wrap">
+                        <div class="editor-header">
+                            <span class="editor-dot red"></span>
+                            <span class="editor-dot yellow"></span>
+                            <span class="editor-dot green"></span>
+                            <span class="editor-filename" id="modified-filename">output.py</span>
+                        </div>
+                        <pre class="code-display"><code id="code-modified" class="language-python"></code></pre>
+                    </div>
+                </div>
+
+                <div class="output-view" id="view-original">
+                    <div class="code-display-wrap">
+                        <div class="editor-header">
+                            <span class="editor-dot red"></span>
+                            <span class="editor-dot yellow"></span>
+                            <span class="editor-dot green"></span>
+                            <span class="editor-filename">original.py</span>
+                        </div>
+                        <pre class="code-display"><code id="code-original" class="language-python"></code></pre>
+                    </div>
+                </div>
+
+                <div class="output-view" id="view-side-by-side">
+                    <div class="side-by-side">
+                        <div class="code-display-wrap">
+                            <div class="editor-header">
+                                <span class="editor-dot red"></span>
+                                <span class="editor-dot yellow"></span>
+                                <span class="editor-dot green"></span>
+                                <span class="editor-filename">Before</span>
+                            </div>
+                            <pre class="code-display"><code id="code-sbs-original" class="language-python"></code></pre>
+                        </div>
+                        <div class="code-display-wrap">
+                            <div class="editor-header">
+                                <span class="editor-dot red"></span>
+                                <span class="editor-dot yellow"></span>
+                                <span class="editor-dot green"></span>
+                                <span class="editor-filename">After</span>
+                            </div>
+                            <pre class="code-display"><code id="code-sbs-modified" class="language-python"></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Directory Results (for path processing) -->
+                <div class="dir-results" id="dir-results" hidden>
+                    <div class="dir-summary" id="dir-summary"></div>
+                    <div class="dir-file-list" id="dir-file-list"></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="output-actions">
+                    <button class="action-btn" id="copy-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                        Copy
+                    </button>
+                    <button class="action-btn" id="download-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Download
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ── Toast Notifications ──────────────────────────────────── -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

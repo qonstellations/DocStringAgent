@@ -1,7 +1,18 @@
 [project]
 name = "docstringagent"
 version = "0.1.0"
-description = "Add your description here"
+description = "Production-grade Python docstring generation agent"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "langchain>=0.3",
+    "langchain-ollama>=0.3",
+    "langchain-google-genai>=2.1",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "python-dotenv>=1.1",
+    "typer[all]>=0.15",
+    "rich>=13.9",
+    "httpx>=0.28",
+    "python-multipart>=0.0.22",
+]
