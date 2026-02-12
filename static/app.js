@@ -160,7 +160,11 @@
             const data = await res.json();
             showSingleResult(data);
         } catch (e) {
-            toast(e.message, "error");
+            if (e.message.startsWith("⚠️")) {
+                showError(e.message);
+            } else {
+                toast(e.message, "error");
+            }
         } finally {
             setLoading(false);
         }
@@ -188,7 +192,11 @@
             const data = await res.json();
             showSingleResult(data);
         } catch (e) {
-            toast(e.message, "error");
+            if (e.message.startsWith("⚠️")) {
+                showError(e.message);
+            } else {
+                toast(e.message, "error");
+            }
         } finally {
             setLoading(false);
         }
@@ -233,7 +241,11 @@
                 showDirectoryResult(data);
             }
         } catch (e) {
-            toast(e.message, "error");
+            if (e.message.startsWith("⚠️")) {
+                showError(e.message);
+            } else {
+                toast(e.message, "error");
+            }
         } finally {
             setLoading(false);
         }
@@ -284,6 +296,42 @@
         } else {
             toast(`Done! ${data.docstrings_added} docstring(s) generated`, "success");
         }
+
+        outputPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // ── Show Persistent Error ─────────────────────────────────────
+    function showError(message) {
+        const oldBanner = outputPanel.querySelector(".warning-banner");
+        if (oldBanner) oldBanner.remove();
+
+        const banner = document.createElement("div");
+        banner.className = "warning-banner";
+        banner.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span class="warning-banner-text">${message}</span>
+            <button class="banner-close-btn" aria-label="Dismiss">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        `;
+
+        banner.querySelector(".banner-close-btn").addEventListener("click", () => {
+            banner.remove();
+            outputPanel.hidden = true;
+        });
+
+        // Hide other output views/contents to focus on error
+        $$(".output-view").forEach(v => v.classList.remove("active"));
+        dirResults.hidden = true;
+
+        outputPanel.hidden = false;
+        const panelHeader = outputPanel.querySelector(".panel-header");
+        panelHeader.after(banner);
 
         outputPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
