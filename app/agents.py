@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import ast
+import random
 import re
 import textwrap
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -117,6 +119,8 @@ def process_file(
         if docstring:
             source_lines = _insert_docstring(source_lines, node, docstring)
             processed += 1
+            # Rate limit delay to prevent 429 errors
+            time.sleep(config.RATE_LIMIT_DELAY)
 
     documented = "\n".join(source_lines) + "\n"
 
@@ -155,9 +159,17 @@ def generate_docstring(
     ]
 
     corrections = 0
+    docstring = None
 
     for attempt in range(1 + config.MAX_CORRECTION_PASSES):
-        response = llm.invoke(messages)
+        try:
+            print(f"[DEBUG] Attempt {attempt+1}/{config.MAX_CORRECTION_PASSES + 1} for {analysis.name}")
+            response = _invoke_with_backoff(llm, messages)
+        except Exception as e:
+            print(f"[ERROR] Failed after backoff: {e}")
+            # If backoff failed, return best effort or empty
+            return docstring or "", corrections
+
         raw = response.content.strip()
         docstring = _extract_docstring(raw)
 
@@ -192,6 +204,29 @@ def generate_docstring(
 
     # Return best effort after exhausting correction passes
     return docstring, corrections
+
+
+def _invoke_with_backoff(llm, messages) -> any:
+    """Invoke LLM with exponential backoff for rate limits."""
+    delay = 1.0
+    for i in range(config.MAX_RETRIES):
+        try:
+            print(f"[DEBUG] Invoking LLM (try {i+1}/{config.MAX_RETRIES})")
+            return llm.invoke(messages)
+        except Exception as e:
+            msg = str(e).lower()
+            print(f"[WARNING] LLM Error: {msg}")
+            if "resource exhausted" in msg or "429" in msg:
+                if i == config.MAX_RETRIES - 1:
+                    print("[ERROR] Max retries reached for 429")
+                    raise
+                sleep_time = delay + random.uniform(0, 0.5)
+                print(f"[INFO] Retrying in {sleep_time:.2f}s...")
+                time.sleep(sleep_time)
+                delay *= 2
+            else:
+                raise
+    return llm.invoke(messages)
 
 
 # ── Helpers ─────────────────────────────────────────────────────
