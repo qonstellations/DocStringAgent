@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 
-from app import config
+from src import config
 
 cli = typer.Typer(
     name="docstringagent",
@@ -34,7 +34,7 @@ def generate(
     diff: bool = typer.Option(False, "--diff", help="Show diff instead of writing"),
 ) -> None:
     """Add Google-style docstrings to a Python file."""
-    from app.agents import process_file
+    from src.agents import process_file
 
     if not file.exists():
         console.print(f"[red]Error:[/red] File not found: {file}")
@@ -84,13 +84,13 @@ def serve(
             border_style="green",
         )
     )
-    uvicorn.run("app.server:app", host=host, port=port, reload=True)
+    uvicorn.run("src.server:app", host=host, port=port, reload=True)
 
 
 @cli.command()
 def models() -> None:
     """List available LLM models."""
-    from app.models import list_ollama_models, detect_default_model
+    from src.models import list_ollama_models, detect_default_model
 
     console.print("\n[bold cyan]Available Models[/bold cyan]\n")
 

@@ -21,9 +21,10 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from app.agents import process_file, RateLimitError
-from app.models import list_ollama_models
-from app import config
+from src.agents import process_file, RateLimitError
+from src.models import list_ollama_models
+from src import config
+
 
 # ── App Setup ───────────────────────────────────────────────────
 

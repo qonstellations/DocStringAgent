@@ -10,7 +10,7 @@ import httpx
 from langchain_ollama import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app import config
+from src import config
 
 
 # ── Ollama Discovery ────────────────────────────────────────────

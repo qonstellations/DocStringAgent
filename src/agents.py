@@ -10,9 +10,9 @@ import time
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from app import config
-from app.models import get_llm
-from app.tools import FunctionAnalysis, analyze_function, validate_docstring_sections
+from src import config
+from src.models import get_llm
+from src.tools import FunctionAnalysis, analyze_function, validate_docstring_sections
 
 
 
