@@ -21,7 +21,7 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from app.agents import process_file
+from app.agents import process_file, RateLimitError
 from app.models import list_ollama_models
 from app import config
 
@@ -101,6 +101,8 @@ async def generate(req: GenerateRequest):
             provider=provider,
             model_name=model_name,
         )
+    except RateLimitError as e:
+        raise HTTPException(status_code=429, detail=str(e))
     except SyntaxError as e:
         raise HTTPException(status_code=400, detail=f"Invalid Python syntax: {e}")
     except ValueError as e:
@@ -142,6 +144,8 @@ async def upload(
             provider=provider,
             model_name=model_name,
         )
+    except RateLimitError as e:
+        raise HTTPException(status_code=429, detail=str(e))
     except SyntaxError as e:
         raise HTTPException(status_code=400, detail=f"Invalid Python syntax: {e}")
     except ValueError as e:
@@ -209,6 +213,18 @@ async def process_path(req: PathRequest):
                 "docstrings_added": result["functions_processed"],
                 "changed": changed,
             })
+        except RateLimitError as e:
+            total_errors += 1
+            results.append({
+                "filepath": str(fpath),
+                "original": "",
+                "modified": "",
+                "elements_found": 0,
+                "docstrings_added": 0,
+                "changed": changed,
+                "error": f"RATE LIMIT: {e}",
+            })
+
         except Exception as e:
             total_errors += 1
             results.append({

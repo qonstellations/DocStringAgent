@@ -15,6 +15,12 @@ from app.models import get_llm
 from app.tools import FunctionAnalysis, analyze_function, validate_docstring_sections
 
 
+
+class RateLimitError(Exception):
+    """Raised when LLM rate limits are exceeded after retries."""
+    pass
+
+
 # ── System Prompt ───────────────────────────────────────────────
 
 SYSTEM_PROMPT = """\
@@ -162,13 +168,8 @@ def generate_docstring(
     docstring = None
 
     for attempt in range(1 + config.MAX_CORRECTION_PASSES):
-        try:
-            print(f"[DEBUG] Attempt {attempt+1}/{config.MAX_CORRECTION_PASSES + 1} for {analysis.name}")
-            response = _invoke_with_backoff(llm, messages)
-        except Exception as e:
-            print(f"[ERROR] Failed after backoff: {e}")
-            # If backoff failed, return best effort or empty
-            return docstring or "", corrections
+        print(f"[DEBUG] Attempt {attempt+1}/{config.MAX_CORRECTION_PASSES + 1} for {analysis.name}")
+        response = _invoke_no_retry(llm, messages)
 
         raw = response.content.strip()
         docstring = _extract_docstring(raw)
@@ -206,27 +207,17 @@ def generate_docstring(
     return docstring, corrections
 
 
-def _invoke_with_backoff(llm, messages) -> any:
-    """Invoke LLM with exponential backoff for rate limits."""
-    delay = 1.0
-    for i in range(config.MAX_RETRIES):
-        try:
-            print(f"[DEBUG] Invoking LLM (try {i+1}/{config.MAX_RETRIES})")
-            return llm.invoke(messages)
-        except Exception as e:
-            msg = str(e).lower()
-            print(f"[WARNING] LLM Error: {msg}")
-            if "resource exhausted" in msg or "429" in msg:
-                if i == config.MAX_RETRIES - 1:
-                    print("[ERROR] Max retries reached for 429")
-                    raise
-                sleep_time = delay + random.uniform(0, 0.5)
-                print(f"[INFO] Retrying in {sleep_time:.2f}s...")
-                time.sleep(sleep_time)
-                delay *= 2
-            else:
-                raise
-    return llm.invoke(messages)
+def _invoke_no_retry(llm, messages) -> any:
+    """Invoke LLM once; raise RateLimitError immediately on 429."""
+    try:
+        return llm.invoke(messages)
+    except Exception as e:
+        msg = str(e).lower()
+        if "resource exhausted" in msg or "429" in msg:
+            print("[ERROR] Rate limit hit immediately.")
+            raise RateLimitError("Rate limit exceeded. Please try again later or switch models.")
+        raise
+
 
 
 # ── Helpers ─────────────────────────────────────────────────────

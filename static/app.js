@@ -152,6 +152,9 @@
             });
             if (!res.ok) {
                 const err = await res.json();
+                if (res.status === 429) {
+                    throw new Error("⚠️ RATE LIMIT EXCEEDED: " + (err.detail || "Please try again later."));
+                }
                 throw new Error(err.detail || "Server error");
             }
             const data = await res.json();
@@ -177,6 +180,9 @@
             const res = await fetch("/api/upload", { method: "POST", body: form });
             if (!res.ok) {
                 const err = await res.json();
+                if (res.status === 429) {
+                    throw new Error("⚠️ RATE LIMIT EXCEEDED: " + (err.detail || "Please try again later."));
+                }
                 throw new Error(err.detail || "Server error");
             }
             const data = await res.json();
@@ -207,6 +213,9 @@
             });
             if (!res.ok) {
                 const err = await res.json();
+                if (res.status === 429) {
+                    throw new Error("⚠️ RATE LIMIT EXCEEDED: " + (err.detail || "Please try again later."));
+                }
                 throw new Error(err.detail || "Server error");
             }
             const data = await res.json();
