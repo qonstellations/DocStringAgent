@@ -78,6 +78,7 @@ cd DocStringAgent
 
 # Install dependencies
 uv sync
+uv venv
 
 # Edit .env and add your GEMINI_API_KEY
 ```
@@ -85,7 +86,7 @@ uv sync
 ### Web UI
 
 ```bash
-uv run python main.py serve
+uv run main.py serve
 # Open http://localhost:8000
 ```
 
@@ -100,13 +101,13 @@ Select a model from the dropdown (Gemini cloud or local Ollama), click **Generat
 
 ```bash
 # Generate docstrings for a single file
-uv run python main.py generate path/to/file.py
+uv run main.py generate path/to/file.py
 
 # Generate and overwrite the file in-place
-uv run python main.py generate path/to/file.py --overwrite
+uv run main.py generate path/to/file.py --overwrite
 
 # List available models
-uv run python main.py models
+uv run main.py models
 ```
 
 ### Project Structure
