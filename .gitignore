@@ -12,3 +12,6 @@ wheels/
 
 # Presentation
 presentation/
+
+# MacOS
+.DS_Store
