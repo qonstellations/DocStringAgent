@@ -32,6 +32,7 @@ def generate(
     temperature: float = typer.Option(config.TEMPERATURE, help="Sampling temperature"),
     output: Path | None = typer.Option(None, "-o", help="Output path (default: overwrite in-place)"),
     diff: bool = typer.Option(False, "--diff", help="Show diff instead of writing"),
+    force: bool = typer.Option(False, "--force", "-f", help="Force updates even if docstrings exist"),
 ) -> None:
     """Add Google-style docstrings to a Python file."""
     from src.agents import process_file
@@ -50,6 +51,7 @@ def generate(
             provider=provider,
             model_name=model,
             temperature=temperature,
+            force=force,
         )
 
     documented = result["documented"]

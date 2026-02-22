@@ -8,12 +8,12 @@ An **AI-powered Python docstring generation agent** that automatically generates
 
 ```
 ┌──────────────┐     ┌───────────────┐     ┌──────────────────┐
-│  Source Code  │────▶│  AST Analyzer │────▶│  LLM Generation  │
+│  Source Code │────▶│  AST Analyzer │────▶│  LLM Generation  │
 └──────────────┘     └───────────────┘     └────────┬─────────┘
                                                     │
                                            ┌────────▼─────────┐
-                                           │   Validator       │
-                                           │  (rule-based)     │
+                                           │   Validator      │
+                                           │  (rule-based)    │
                                            └────────┬─────────┘
                                                     │
                                         ┌───────────▼──────────┐
@@ -22,8 +22,8 @@ An **AI-powered Python docstring generation agent** that automatically generates
                                           Yes              No
                                             │               │
                                   ┌─────────▼──────┐  ┌─────▼───────┐
-                                  │ Correction Loop │  │  Insert     │
-                                  │ (max 2 passes)  │  │  Docstring  │
+                                  │ Correction Loop│  │  Insert     │
+                                  │ (max 2 passes) │  │  Docstring  │
                                   └─────────┬──────┘  └─────────────┘
                                             │
                                      back to LLM
@@ -86,7 +86,7 @@ uv venv
 ### Web UI
 
 ```bash
-uv run main.py serve
+uv run -m src serve
 # Open http://localhost:8000
 ```
 
@@ -101,21 +101,33 @@ Select a model from the dropdown (Gemini cloud or local Ollama), click **Generat
 
 ```bash
 # Generate docstrings for a single file
-uv run main.py generate path/to/file.py
+uv run -m src generate path/to/file.py
 
 # Generate and overwrite the file in-place
-uv run main.py generate path/to/file.py --overwrite
+uv run -m src generate path/to/file.py --overwrite
 
 # List available models
-uv run main.py models
+uv run -m src models
+```
+
+### Docker
+
+You can also run the application using Docker:
+
+```bash
+# Using Docker Compose (Recommended)
+docker compose up --build
+
+# Using Docker directly
+docker build -t docstring-agent .
+docker run -p 8000:8000 docstring-agent
 ```
 
 ### Project Structure
 
 ```
 DocStringAgent/
-├── main.py              # Entry point (Typer CLI)
-├── app/
+├── src/
 │   ├── __main__.py      # CLI commands (generate, serve, models)
 │   ├── agents.py        # LLM prompting, validation loop, docstring insertion
 │   ├── config.py        # Configuration constants, env loading
@@ -126,6 +138,8 @@ DocStringAgent/
 │   ├── index.html       # Web UI
 │   ├── styles.css       # Dark-mode stylesheet
 │   └── app.js           # Frontend logic
+├── Dockerfile           # Docker build instructions
+├── docker-compose.yaml  # Docker Compose configuration
 ├── pyproject.toml
 └── .env                 # API keys (not committed)
 ```

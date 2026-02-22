@@ -101,6 +101,7 @@ async def generate(req: GenerateRequest):
             source=req.source_code,
             provider=provider,
             model_name=model_name,
+            force=req.overwrite,
         )
     except RateLimitError as e:
         raise HTTPException(status_code=429, detail=str(e))
@@ -144,6 +145,7 @@ async def upload(
             source=source,
             provider=provider,
             model_name=model_name,
+            force=overwrite,
         )
     except RateLimitError as e:
         raise HTTPException(status_code=429, detail=str(e))
@@ -199,6 +201,7 @@ async def process_path(req: PathRequest):
                 source=source,
                 provider=provider,
                 model_name=model_name,
+                force=req.overwrite,
             )
             changed = result["functions_processed"] > 0
             if changed:

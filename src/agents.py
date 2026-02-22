@@ -80,6 +80,7 @@ def process_file(
     provider: str = "auto",
     model_name: str | None = None,
     temperature: float = config.TEMPERATURE,
+    force: bool = False,
 ) -> dict:
     """Process an entire Python file and add docstrings to all functions/classes.
 
@@ -115,7 +116,7 @@ def process_file(
 
     for node in targets:
         # Skip if already has a docstring
-        if _has_docstring(node):
+        if _has_docstring(node) and not force:
             continue
 
         analysis = analyze_function(node, source_lines)
@@ -344,6 +345,29 @@ def _insert_docstring(
                 new_lines.append("")
         new_lines.append(f'{indent_str}"""')
 
-    # Insert docstring before the first body statement
+    # Remove existing docstring if present
+    # Note: simple line-based removal.
+    if _has_docstring(node):
+        doc_node = node.body[0]
+        # end_lineno is inclusive, lineno is 1-indexed
+        start_removed = doc_node.lineno - 1
+        end_removed = (doc_node.end_lineno or doc_node.lineno)
+        
+        # If the docstring is on lines [start_removed, end_removed),
+        # strict slicing removes source_lines[start_removed:end_removed]
+        # BUT we need to be careful if body_line_idx (where we insert) 
+        # is actually pointing to the line we are about to remove.
+        #
+        # In _insert_docstring, body_line_idx is derived from node.body[0].lineno - 1.
+        # So body_line_idx IS start_removed.
+        
+        # Remove the old docstring lines
+        source_lines = source_lines[:start_removed] + source_lines[end_removed:]
+        
+        # Now we insert at start_removed (which is where the next statement shifting up would be, 
+        # or where the docstring was)
+        body_line_idx = start_removed
+
+    # Insert docstring before the first body statement (or where it was)
     result = source_lines[:body_line_idx] + new_lines + source_lines[body_line_idx:]
     return result

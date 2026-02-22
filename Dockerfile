@@ -14,7 +14,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY main.py .
 COPY src/ src/
 COPY static/ static/
 
@@ -22,4 +21,4 @@ COPY static/ static/
 EXPOSE 8000
 
 # Run the application
-CMD ["python", "main.py", "serve", "--host", "0.0.0.0"]
+CMD ["python", "-m", "src", "serve", "--host", "0.0.0.0"]
