@@ -2,6 +2,8 @@
 
 An **AI-powered Python docstring generation agent** that automatically generates clean, Google-style docstrings for your Python code. Paste code, upload a file, or point to a server path — the agent analyses your code with AST introspection, calls an LLM, validates the output, and self-corrects up to 2 times until the docstring is accurate.
 
+> 🏆 **Hackathon Winner** — Won at the **Epoch x Nasiko Agentic AI Bootcamp** held at **IIIT Sricity**, February 2026.
+
 ---
 
 ## Agent Design
